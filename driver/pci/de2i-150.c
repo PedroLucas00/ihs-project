@@ -7,6 +7,7 @@
 #include <linux/cdev.h>	   /* char device registration */
 #include <linux/uaccess.h> /* copy_*_user functions */
 #include <linux/pci.h>	   /* pci funcs and types */
+#include <linux/delay.h>   /* Time functions */
 
 #include "../../include/ioctl_cmds.h"
 
@@ -24,9 +25,9 @@ MODULE_DESCRIPTION("simple pci driver for DE2i-150 dev board");
 #define MY_PCI_VENDOR_ID 0x1172
 #define MY_PCI_DEVICE_ID 0x0004
 
-#define LCD_BASE_ADDR 0xC000  // Definir conforme documentação da DE2i-150
-#define LCD_CMD_REG   0xC000  // Endereço do registrador de comando
-#define LCD_DATA_REG  0xC002 
+#define LCD_BASE_ADDR 0xC000 // Definir conforme documentação da DE2i-150
+#define LCD_CMD_REG 0xC000	 // Endereço do registrador de comando
+#define LCD_DATA_REG 0xC002
 
 /* lkm entry and exit functions */
 
@@ -346,28 +347,31 @@ static void __exit my_pci_remove(struct pci_dev *dev)
 	printk("my_driver: PCI Device - Disabled and BAR0 Released");
 }
 
-static void lcd_write_message(const char *message) {
-    int i;
-    
-    if (bar0_mmio == NULL) {
-        printk("my_driver: LCD error - BAR0 not mapped!\n");
-        return;
-    }
+static void lcd_write_message(const char *message)
+{
+	int i;
 
-    void __iomem *lcd_cmd = bar0_mmio + LCD_CMD_REG;
-    void __iomem *lcd_data = bar0_mmio + LCD_DATA_REG;
+	if (bar0_mmio == NULL)
+	{
+		printk("my_driver: LCD error - BAR0 not mapped!\n");
+		return;
+	}
 
-    // Comando para limpar a tela
-    iowrite16(0x01, lcd_cmd);
-    msleep(2); // Espera um tempo para a limpeza
+	void __iomem *lcd_cmd = bar0_mmio + LCD_CMD_REG;
+	void __iomem *lcd_data = bar0_mmio + LCD_DATA_REG;
 
-    // Enviar caracteres para o LCD
-    for (i = 0; message[i] != '\0'; i++) {
-        iowrite16(message[i], lcd_data);  // Envia caractere
-        msleep(1);  // Pequeno delay para evitar sobrecarga
-    }
+	// Comando para limpar a tela
+	iowrite16(0x01, lcd_cmd);
+	usleep_range(2000, 3000); // Espera um tempo para a limpeza
 
-    printk("my_driver: Mensagem escrita no LCD: %s\n", message);
+	// Enviar caracteres para o LCD
+	for (i = 0; message[i] != '\0'; i++)
+	{
+		iowrite16(message[i], lcd_data); // Envia caractere
+		usleep_range(1000, 2000);		 // Pequeno delay para evitar sobrecarga
+	}
+
+	printk("my_driver: Mensagem escrita no LCD: %s\n", message);
 }
 
 module_init(my_init);

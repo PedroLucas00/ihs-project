@@ -14,7 +14,7 @@ screen = pygame.display.set_mode(WINDOW_SIZE,0,32)
 
 player_walkR = [pygame.image.load('assets/naruto1d.png'), pygame.image.load('assets/naruto2d.png'), pygame.image.load('assets/naruto3d.png'), pygame.image.load('assets/naruto4d.png'), pygame.image.load('assets/naruto5d.png'), pygame.image.load('assets/naruto6d.png'), pygame.image.load('assets/naruto7d.png'), pygame.image.load('assets/naruto8d.png'), pygame.image.load('assets/naruto9d.png'), pygame.image.load('assets/naruto10d.png'), pygame.image.load('assets/naruto11d.png'), pygame.image.load('assets/naruto12d.png'), pygame.image.load('assets/naruto13d.png'), pygame.image.load('assets/naruto14d.png'), pygame.image.load('assets/naruto15d.png')] #carrega a imagem do meu personagem
 player_walkL = [pygame.image.load('assets/naruto1e.png'), pygame.image.load('assets/naruto2e.png'), pygame.image.load('assets/naruto3e.png'), pygame.image.load('assets/naruto4e.png'), pygame.image.load('assets/naruto5e.png'), pygame.image.load('assets/naruto6e.png'), pygame.image.load('assets/naruto7e.png'), pygame.image.load('assets/naruto8e.png'), pygame.image.load('assets/naruto9e.png'), pygame.image.load('assets/naruto10e.png'), pygame.image.load('assets/naruto11e.png'), pygame.image.load('assets/naruto12e.png'), pygame.image.load('assets/naruto13e.png'), pygame.image.load('assets/naruto14e.png'), pygame.image.load('assets/naruto15e.png')]
-player_jump = [pygame.image.load('assets/jumpd.png'), pygame.image.load('assets/jumpe.png')]
+player_jump = [pygame.image.load('assets/jumped.png'), pygame.image.load('assets/jumpe.png')]
 obstaculo_sprite = pygame.image.load('assets/obstaculo1.png')
 obstaculo1_sprite = pygame.image.load('assets/obstaculo2.png')
 bg = pygame.image.load('assets/background.png')
