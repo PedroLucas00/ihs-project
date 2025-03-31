@@ -43,9 +43,4 @@ Then you're ready to go, have fun! 😁
 
 ## 👥 Group
 
-- [Filipe Baptistella (fbv)](https://github.com/filipe-baptistella)
-- [João Marcos (jmav)](https://github.com/jmarcossss)
-- [Lucas Emmanuel (legl)](https://github.com/OhLK)
-- [Mateus Elias (meap)](https://github.com/mateuseap)
-- [Nathalia Barbosa (nfab)](https://github.com/nathaliafab)
-- [Pedro Rodrigues (prds)](https://github.com/Pedr0Domingues)
+-
