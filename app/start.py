@@ -11,7 +11,8 @@ def reset():
     green_leds(fd=fd, on=False, inverse=False, sequence=False, show_output_msg=True)
     read_switches(fd=fd, show_output_msg=True)
     read_button(fd=fd, show_output_msg=True)
-    read_button(fd=fd, show_output_msg=True)    
+    read_button(fd=fd, show_output_msg=True)   
+    write_lcd("Olá, User 0001!") 
 
     os.close(fd)
     print('\nArquivo fechado com sucesso!\n')

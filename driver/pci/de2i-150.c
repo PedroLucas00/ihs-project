@@ -1,12 +1,12 @@
 #include <linux/init.h>
-#include <linux/module.h>	/* THIS_MODULE macro */
-#include <linux/fs.h>		/* VFS related */
-#include <linux/ioctl.h>	/* ioctl syscall */
-#include <linux/errno.h>	/* error codes */
-#include <linux/types.h>	/* dev_t number */
-#include <linux/cdev.h>		/* char device registration */
-#include <linux/uaccess.h>	/* copy_*_user functions */
-#include <linux/pci.h>		/* pci funcs and types */
+#include <linux/module.h>  /* THIS_MODULE macro */
+#include <linux/fs.h>	   /* VFS related */
+#include <linux/ioctl.h>   /* ioctl syscall */
+#include <linux/errno.h>   /* error codes */
+#include <linux/types.h>   /* dev_t number */
+#include <linux/cdev.h>	   /* char device registration */
+#include <linux/uaccess.h> /* copy_*_user functions */
+#include <linux/pci.h>	   /* pci funcs and types */
 
 #include "../../include/ioctl_cmds.h"
 
@@ -18,39 +18,43 @@ MODULE_DESCRIPTION("simple pci driver for DE2i-150 dev board");
 
 /* driver constants */
 
-#define DRIVER_NAME      "my_driver"
-#define FILE_NAME        "mydev"
-#define DRIVER_CLASS     "MyModuleClass"
-#define MY_PCI_VENDOR_ID  0x1172
-#define MY_PCI_DEVICE_ID  0x0004
+#define DRIVER_NAME "my_driver"
+#define FILE_NAME "mydev"
+#define DRIVER_CLASS "MyModuleClass"
+#define MY_PCI_VENDOR_ID 0x1172
+#define MY_PCI_DEVICE_ID 0x0004
 
-#define LCD_CTRL_OFFSET  0xC200  // Endereço de controle do LCD
-#define LCD_DATA_OFFSET  0xC204  // Endereço de dados do LCD
+#define LCD_BASE_ADDR 0xC000  // Definir conforme documentação da DE2i-150
+#define LCD_CMD_REG   0xC000  // Endereço do registrador de comando
+#define LCD_DATA_REG  0xC002 
 
 /* lkm entry and exit functions */
 
-static int  __init my_init (void);
-static void __exit my_exit (void);
+static int __init my_init(void);
+static void __exit my_exit(void);
 
 /* char device system calls */
 
-static int	my_open   (struct inode*, struct file*);
-static int 	my_close  (struct inode*, struct file*);
-static ssize_t 	my_read   (struct file*, char __user*, size_t, loff_t*);
-static ssize_t 	my_write  (struct file*, const char __user*, size_t, loff_t*);
-static long int	my_ioctl  (struct file*, unsigned int, unsigned long);
+static int my_open(struct inode *, struct file *);
+static int my_close(struct inode *, struct file *);
+static ssize_t my_read(struct file *, char __user *, size_t, loff_t *);
+static ssize_t my_write(struct file *, const char __user *, size_t, loff_t *);
+static long int my_ioctl(struct file *, unsigned int, unsigned long);
 
 /* pci functions */
 
-static int  __init my_pci_probe  (struct pci_dev *dev, const struct pci_device_id *id);
-static void __exit my_pci_remove (struct pci_dev *dev);
+static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *id);
+static void __exit my_pci_remove(struct pci_dev *dev);
 
 /* pci ids which this driver supports */
 
 static struct pci_device_id pci_ids[] = {
-	{PCI_DEVICE(MY_PCI_VENDOR_ID, MY_PCI_DEVICE_ID), },
-	{0, }
-};
+	{
+		PCI_DEVICE(MY_PCI_VENDOR_ID, MY_PCI_DEVICE_ID),
+	},
+	{
+		0,
+	}};
 MODULE_DEVICE_TABLE(pci, pci_ids);
 
 /* device file operations */
@@ -59,10 +63,9 @@ static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.read = my_read,
 	.write = my_write,
-	.unlocked_ioctl	= my_ioctl,
+	.unlocked_ioctl = my_ioctl,
 	.open = my_open,
-	.release = my_close
-};
+	.release = my_close};
 
 /* pci driver operations */
 
@@ -70,34 +73,33 @@ static struct pci_driver pci_ops = {
 	.name = DRIVER_NAME,
 	.id_table = pci_ids,
 	.probe = my_pci_probe,
-	.remove = my_pci_remove
-};
+	.remove = my_pci_remove};
 
 /* variables for char device registration to kernel */
 
 static dev_t my_device_nbr;
-static struct class* my_class;
+static struct class *my_class;
 static struct cdev my_device;
 
 /* --- device data --- */
 /* PCI BARs mapped to virtual space */
-static void __iomem* bar0_mmio = NULL;
+static void __iomem *bar0_mmio = NULL;
 
 /* MMIO pointers used in write() read() ioctl() */
-static void __iomem* read_pointer  = NULL;
-static void __iomem* write_pointer = NULL;
+static void __iomem *read_pointer = NULL;
+static void __iomem *write_pointer = NULL;
 
 /* peripherals names for debugging in dmesg */
-static const char* peripheral[] = {
+static const char *peripheral[] = {
 	"switches",
 	"p_buttons",
 	"display_l",
 	"display_r",
 	"green_leds",
-	"red_leds"
-};
+	"red_leds"};
 
-enum perf_names_idx {
+enum perf_names_idx
+{
 	IDX_SWITCH = 0,
 	IDX_PBUTTONS,
 	IDX_DISPLAYL,
@@ -115,20 +117,23 @@ static int __init my_init(void)
 	printk("my_driver: loaded to the kernel\n");
 
 	/* 0. register pci driver to the kernel */
-	if (pci_register_driver(&pci_ops) < 0) {
+	if (pci_register_driver(&pci_ops) < 0)
+	{
 		printk("my_driver: PCI driver registration failed\n");
 		return -EAGAIN;
 	}
 
 	/* 1. request the kernel for a device number */
-	if (alloc_chrdev_region(&my_device_nbr, 0, 1, DRIVER_NAME) < 0) {
+	if (alloc_chrdev_region(&my_device_nbr, 0, 1, DRIVER_NAME) < 0)
+	{
 		printk("my_driver: device number could not be allocated!\n");
 		return -EAGAIN;
 	}
 	printk("my_driver: device number %d was registered!\n", MAJOR(my_device_nbr));
 
 	/* 2. create class : appears at /sys/class */
-	if ((my_class = class_create(THIS_MODULE, DRIVER_CLASS)) == NULL) {
+	if ((my_class = class_create(THIS_MODULE, DRIVER_CLASS)) == NULL)
+	{
 		printk("my_driver: device class count not be created!\n");
 		goto ClassError;
 	}
@@ -137,13 +142,15 @@ static int __init my_init(void)
 	cdev_init(&my_device, &fops);
 
 	/* 4. create the device node */
-	if (device_create(my_class, NULL, my_device_nbr, NULL, FILE_NAME) == NULL) {
+	if (device_create(my_class, NULL, my_device_nbr, NULL, FILE_NAME) == NULL)
+	{
 		printk("my_driver: can not create device file!\n");
 		goto FileError;
 	}
 
 	/* 5. now make the device live for the users to access */
-	if (cdev_add(&my_device, my_device_nbr, 1) == -1){
+	if (cdev_add(&my_device, my_device_nbr, 1) == -1)
+	{
 		printk("my_driver: registering of device to kernel failed!\n");
 		goto AddError;
 	}
@@ -170,26 +177,27 @@ static void __exit my_exit(void)
 	printk("my_driver: goodbye kernel!\n");
 }
 
-static int my_open(struct inode* inode, struct file* filp)
+static int my_open(struct inode *inode, struct file *filp)
 {
 	printk("my_driver: open was called\n");
 	return 0;
 }
 
-static int my_close(struct inode* inode, struct file* filp)
+static int my_close(struct inode *inode, struct file *filp)
 {
 	printk("my_driver: close was called\n");
 	return 0;
 }
 
-static ssize_t my_read(struct file* filp, char __user* buf, size_t count, loff_t* f_pos)
+static ssize_t my_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
 	ssize_t retval = 0;
 	int to_cpy = 0;
 	static unsigned int temp_read = 0;
 
 	/* check if the read_pointer pointer is set */
-	if (read_pointer == NULL) {
+	if (read_pointer == NULL)
+	{
 		printk("my_driver: trying to read to a device region not set yet\n");
 		return -ECANCELED;
 	}
@@ -207,14 +215,15 @@ static ssize_t my_read(struct file* filp, char __user* buf, size_t count, loff_t
 	return retval;
 }
 
-static ssize_t my_write(struct file* filp, const char __user* buf, size_t count, loff_t* f_pos)
+static ssize_t my_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
 	ssize_t retval = 0;
 	int to_cpy = 0;
 	static unsigned int temp_write = 0;
 
 	/* check if the write_pointer pointer is set */
-	if (write_pointer == NULL) {
+	if (write_pointer == NULL)
+	{
 		printk("my_driver: trying to write to a device region not set yet\n");
 		return -ECANCELED;
 	}
@@ -232,9 +241,12 @@ static ssize_t my_write(struct file* filp, const char __user* buf, size_t count,
 	return retval;
 }
 
-static long int my_ioctl(struct file*, unsigned int cmd, unsigned long arg)
+static long int my_ioctl(struct file *, unsigned int cmd, unsigned long arg)
 {
-	switch(cmd){
+	char user_message[32];
+
+	switch (cmd)
+	{
 	case RD_SWITCHES:
 		read_pointer = bar0_mmio + 0xC080;
 		rd_name_idx = IDX_SWITCH;
@@ -259,6 +271,14 @@ static long int my_ioctl(struct file*, unsigned int cmd, unsigned long arg)
 		write_pointer = bar0_mmio + 0xC100;
 		wr_name_idx = IDX_DISPLAYR;
 		break;
+	case WR_LCD:
+		if (copy_from_user(user_message, (char __user *)arg, sizeof(user_message)))
+		{
+			printk("my_driver: Erro ao copiar mensagem do usuário\n");
+			return -EFAULT;
+		}
+		lcd_write_message(user_message);
+		break;
 	default:
 		printk("my_driver: unknown ioctl command: 0x%X\n", cmd);
 	}
@@ -273,7 +293,8 @@ static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *
 	unsigned long bar_len;
 
 	/* enable the device */
-	if (pci_enable_device(dev) < 0) {
+	if (pci_enable_device(dev) < 0)
+	{
 		printk("my_driver: Could not enable the PCI device!\n");
 		return -EBUSY;
 	}
@@ -288,10 +309,11 @@ static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *
 	/* read info about the PCI device BAR0 */
 	pci_read_config_dword(dev, 0x10, &bar_value);
 	bar_len = pci_resource_len(dev, 0);
-	printk("my_driver: PCI device - BAR0 => 0x%X with length of %ld Kbytes\n", bar_value, bar_len/1024);
+	printk("my_driver: PCI device - BAR0 => 0x%X with length of %ld Kbytes\n", bar_value, bar_len / 1024);
 
 	/* mark the PCI BAR0 region as reserved to this driver */
-	if (pci_request_region(dev, 0, DRIVER_NAME) != 0) {
+	if (pci_request_region(dev, 0, DRIVER_NAME) != 0)
+	{
 		printk("my_driver: PCI Error - PCI BAR0 region already in use!\n");
 		pci_disable_device(dev);
 		return -EBUSY;
@@ -302,7 +324,7 @@ static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *
 
 	/* initialize a default peripheral read and write pointer */
 	write_pointer = bar0_mmio + 0xC040;
-	read_pointer  = bar0_mmio + 0xC080;
+	read_pointer = bar0_mmio + 0xC080;
 
 	return 0;
 }
@@ -324,27 +346,29 @@ static void __exit my_pci_remove(struct pci_dev *dev)
 	printk("my_driver: PCI Device - Disabled and BAR0 Released");
 }
 
-static void lcd_write_string(const char* str) {
-    if (!bar0_mmio) {
-        printk("my_driver: Erro - BAR0 não está mapeado!\n");
+static void lcd_write_message(const char *message) {
+    int i;
+    
+    if (bar0_mmio == NULL) {
+        printk("my_driver: LCD error - BAR0 not mapped!\n");
         return;
     }
 
-    void __iomem *lcd_ctrl = bar0_mmio + LCD_CTRL_OFFSET;
-    void __iomem *lcd_data = bar0_mmio + LCD_DATA_OFFSET;
+    void __iomem *lcd_cmd = bar0_mmio + LCD_CMD_REG;
+    void __iomem *lcd_data = bar0_mmio + LCD_DATA_REG;
 
-    // Inicializar LCD
-    iowrite32(0x01, lcd_ctrl);  // Limpar tela e mover cursor para (0,0)
-    msleep(10);                 // Pequeno delay para o LCD processar
+    // Comando para limpar a tela
+    iowrite16(0x01, lcd_cmd);
+    msleep(2); // Espera um tempo para a limpeza
 
-    while (*str) {
-        iowrite32(*str, lcd_data);  // Enviar caractere ao LCD
-        str++;
-        msleep(2);  // Pequeno delay para evitar sobrecarga no LCD
+    // Enviar caracteres para o LCD
+    for (i = 0; message[i] != '\0'; i++) {
+        iowrite16(message[i], lcd_data);  // Envia caractere
+        msleep(1);  // Pequeno delay para evitar sobrecarga
     }
+
+    printk("my_driver: Mensagem escrita no LCD: %s\n", message);
 }
 
 module_init(my_init);
 module_exit(my_exit);
-
-lcd_write_string("Hello, User 0001!");

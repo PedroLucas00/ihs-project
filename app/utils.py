@@ -11,6 +11,8 @@ WR_R_DISPLAY = 24932
 WR_RED_LEDS = 24933
 WR_GREEN_LEDS = 24934
 
+WR_LCD = 0x40016107 
+
 SEVEN_SEGMENT_OPTIONS = {
     0: 0b01000000,
     1: 0b01111001, 
@@ -158,3 +160,13 @@ def read_switches(fd, show_output_msg):
         print(f'>>> switches {switches}')
 
     return switches
+
+def write_lcd(message: str):
+    """ Escreve uma mensagem no LCD da DE2i-150 via ioctl """
+    try:
+        with open(DEVICE_PATH, "w") as dev:
+            msg = message[:31].ljust(32, '\0')  # Garantir 32 bytes
+            fcntl.ioctl(dev, WR_LCD, msg.encode('utf-8'))  # Envia ao driver
+        print(f"Mensagem enviada para o LCD: {message}")
+    except Exception as e:
+        print(f"Erro ao escrever no LCD: {e}")
