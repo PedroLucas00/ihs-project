@@ -12,7 +12,7 @@ def reset():
     read_switches(fd=fd, show_output_msg=True)
     read_button(fd=fd, show_output_msg=True)
     read_button(fd=fd, show_output_msg=True)   
-    write_lcd("Olá, User 0001!") 
+    write_lcd(fd, "Hello, User0001!", line=0) 
 
     os.close(fd)
     print('\nArquivo fechado com sucesso!\n')

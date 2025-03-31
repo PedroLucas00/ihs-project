@@ -48,7 +48,7 @@ obstaculo_Y=510
 obstaculo_X2=random.randint(900+minGap, 900+maxGap)
 obstaculo_X3=random.randint(obstaculo_X2+minGap, obstaculo_X2+maxGap)
 lastObstacle=obstaculo_X3
-speed=-5
+speed=-6
 posbgX = 0
 
 fd = os.open(PATH, os.O_RDWR)
@@ -86,7 +86,7 @@ def game_over():
             player_rect = pygame.Rect(player_location[0],player_location[1],player_walkL[0].get_width(),player_walkL[0].get_height())#isso aqui eh pra tratar colisao
 
             array_rect = [0, 590]
-            speed=-5
+            speed=-6
             posbgX = 0
 
             game_loop()
@@ -158,7 +158,7 @@ def game_loop():
             elif ((BUTTONS_OPTIONS[button] == "UP") or (BUTTONS_OPTIONS[button] == "RIGHT-UP") or (BUTTONS_OPTIONS[button] == "LEFT-UP")) and (pulo == False):
                 pulo = True
                 if air_timer < 6:
-                    vertical_momentum = -8
+                    vertical_momentum = -12
             else:
                 moving_left = False
                 moving_right = False
@@ -170,12 +170,12 @@ def game_loop():
 
         if moving_right == True:
             if player_location[0] < 1000:
-                player_location[0] += 4
+                player_location[0] += 6 
             else:
                 player_location[0] = 1000
         if moving_left == True:
             if player_location[0] > 0:
-                player_location[0] -= 4
+                player_location[0] -= 6 
             else:
                 player_location[0] = 0
         player_location[1] += vertical_momentum

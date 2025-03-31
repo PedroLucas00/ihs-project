@@ -161,12 +161,20 @@ def read_switches(fd, show_output_msg):
 
     return switches
 
-def write_lcd(message: str):
-    """ Escreve uma mensagem no LCD da DE2i-150 via ioctl """
-    try:
-        with open(DEVICE_PATH, "w") as dev:
-            msg = message[:31].ljust(32, '\0')  # Garantir 32 bytes
-            fcntl.ioctl(dev, WR_LCD, msg.encode('utf-8'))  # Envia ao driver
-        print(f"Mensagem enviada para o LCD: {message}")
-    except Exception as e:
-        print(f"Erro ao escrever no LCD: {e}")
+def write_lcd(fd, text, line=0, show_output_msg=True):
+    # Limitar o texto a 16 caracteres
+    text = text.ljust(16)[:16]
+
+    # Escolher o comando correto para a linha
+    if line == 0:
+        ioctl(fd, WR_L_DISPLAY)
+    elif line == 1:
+        ioctl(fd, WR_R_DISPLAY)
+    else:
+        raise ValueError("Linha do LCD inválida! Use 0 ou 1.")
+
+    # Escrever no dispositivo
+    os.write(fd, text.encode('ascii'))
+
+    if show_output_msg:
+        print(f'>>> LCD[{line}]: {text}')
