@@ -24,6 +24,9 @@ MODULE_DESCRIPTION("simple pci driver for DE2i-150 dev board");
 #define MY_PCI_VENDOR_ID  0x1172
 #define MY_PCI_DEVICE_ID  0x0004
 
+#define LCD_CTRL_OFFSET  0xC200  // Endereço de controle do LCD
+#define LCD_DATA_OFFSET  0xC204  // Endereço de dados do LCD
+
 /* lkm entry and exit functions */
 
 static int  __init my_init (void);
@@ -233,27 +236,27 @@ static long int my_ioctl(struct file*, unsigned int cmd, unsigned long arg)
 {
 	switch(cmd){
 	case RD_SWITCHES:
-		read_pointer = bar0_mmio + 0xC080; //TODO: update offset
+		read_pointer = bar0_mmio + 0xC080;
 		rd_name_idx = IDX_SWITCH;
 		break;
 	case RD_PBUTTONS:
-		read_pointer = bar0_mmio + 0xC0A0; //TODO: update offset
+		read_pointer = bar0_mmio + 0xC140;
 		rd_name_idx = IDX_PBUTTONS;
 		break;
 	case WR_L_DISPLAY:
-		write_pointer = bar0_mmio + 0xC020; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC160;
 		wr_name_idx = IDX_DISPLAYL;
 		break;
 	case WR_R_DISPLAY:
-		write_pointer = bar0_mmio + 0xC000; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC040;
 		wr_name_idx = IDX_DISPLAYR;
 		break;
 	case WR_RED_LEDS:
-		write_pointer = bar0_mmio + 0xC040; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC120;
 		wr_name_idx = IDX_DISPLAYR;
 		break;
 	case WR_GREEN_LEDS:
-		write_pointer = bar0_mmio + 0xC060; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC100;
 		wr_name_idx = IDX_DISPLAYR;
 		break;
 	default:
@@ -298,8 +301,8 @@ static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *
 	bar0_mmio = pci_iomap(dev, 0, bar_len);
 
 	/* initialize a default peripheral read and write pointer */
-	write_pointer = bar0_mmio + 0xC000; //TODO: update offset
-	read_pointer  = bar0_mmio + 0xC080; //TODO: update offset
+	write_pointer = bar0_mmio + 0xC040;
+	read_pointer  = bar0_mmio + 0xC080;
 
 	return 0;
 }
@@ -321,5 +324,27 @@ static void __exit my_pci_remove(struct pci_dev *dev)
 	printk("my_driver: PCI Device - Disabled and BAR0 Released");
 }
 
+static void lcd_write_string(const char* str) {
+    if (!bar0_mmio) {
+        printk("my_driver: Erro - BAR0 não está mapeado!\n");
+        return;
+    }
+
+    void __iomem *lcd_ctrl = bar0_mmio + LCD_CTRL_OFFSET;
+    void __iomem *lcd_data = bar0_mmio + LCD_DATA_OFFSET;
+
+    // Inicializar LCD
+    iowrite32(0x01, lcd_ctrl);  // Limpar tela e mover cursor para (0,0)
+    msleep(10);                 // Pequeno delay para o LCD processar
+
+    while (*str) {
+        iowrite32(*str, lcd_data);  // Enviar caractere ao LCD
+        str++;
+        msleep(2);  // Pequeno delay para evitar sobrecarga no LCD
+    }
+}
+
 module_init(my_init);
 module_exit(my_exit);
+
+lcd_write_string("Hello, User 0001!");

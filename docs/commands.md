@@ -1,88 +1,120 @@
 # Useful commands
 
-## driver related commands
+## ⚙️ Driver related commands
 
-**REMINDER**: most device files in a Unix-based system are stored at /dev directory
+**REMINDER**: Most device files in a Unix-based system are stored at `/dev directory`
 
-insert a compiled module/driver to the kernel
+- **Insert a compiled module/driver to the kernel**
 
-	$ sudo insmod path/to/file.ko
+```bash
+sudo insmod path/to/file.ko
+```
 
-remove a module/driver from the kernel
+- **Remove a module/driver from the kernel**
+  - Usually the `module_name` is the same name as the `.ko` file inserted
 
-	$ sudo rmmod module_name
+```bash
+sudo rmmod module_name
+```
 
-obs: usually the 'module name' is the same name as the .ko file inserted
+- **Change the permissions of a file or device file**
+  - Permission number is a **octal number**, where 4 = read, 2 = write, 1 = execute. So 7 = 4 + 2 + 1, wich means RWX. 6 = 4 + 2, wich means RW-
 
-change the permissions of a file or device file
+```bash
+sudo chmod 666 /path/to/my_device_file
+```
 
-	$ sudo chmod 666 /path/to/my_device_file
+- **List all running modules/drivers**
 
-obs: permission number is a octal number, where 4 = read, 2 = write, 1 = execute.
-So 7 = 4 + 2 + 1, wich means RWX. 6 = 4 + 2, wich means RW-.
+```bash
+lsmod
+```
 
-list all running modules/drivers
+- **List all running modules/drivers and search the output for a matching string**
 
-	$ lsmod
+```bash
+lsmod | grep string
+```
 
-list all running modules/drivers and search the output for a matching string
+- **Watch the kernel output messages**
 
-	$ lsmod | grep string
+```bash
+sudo dmesg
+```
 
-watch the kernel output messages
+- **Watch the kernel output messages with more readable timestamp**
 
-	$ sudo dmesg
+```bash
+sudo dmesg -wT
+```
 
-watch the kernel output messages with more readable timestamp
+## 📁 File related commands
 
-	$ sudo dmesg -wT
+- **Print out a string to the standard output (usually a terminal)**
 
-## file related commands
+```bash
+echo "string"
+```
 
-print out a string to the standard output (usually a terminal)
+- **Redirect the output of a command to a file using '>'**
+  - The '>' operation will empty the content of the file if the file already exists
 
-	$ echo "string"
+```bash
+echo "string" > test
+ls > test2
+```
 
-redirect the output of a command to a file using '>'
+- **Redirect and append the output of a command to a file using '>>'**
 
-	$ echo "string" > test
-	$ ls > test2
+```bash
+echo "string" >> test
+ls >> test2
+```
 
-obs: the '>' operation will empty the content of the file if the file already exists
+- **Redirect the output of a command to the input of another using the '|' operator**
 
-redirect and append the output of a command to a file using '>>'
+```bash
+ls | grep Documents
+```
 
-	$ echo "string" >> test
-	$ ls >> test2
+- **Print out the full content of a file**
 
-redirect the output of a command to the input of another using the '|' operator
+```bash
+cat path/to/file
+```
 
-	$ ls | grep Documents
+- **Print out N bytes from the beginning of a file**
 
-print out the full content of a file
+```bash
+head -c N path/to/file
+```
 
-	$ cat path/to/file
+- **Print out N bytes from the ending of a file**
 
-print out N bytes from the beginning of a file
+```bash
+tail -c N path/to/file
+```
 
-	$ head -c N path/to/file
+- **Print out N lines (until the '\n' character) from the beginning of a file**
 
-print out N bytes from the ending of a file
+```bash
+head -n N path/to/file
+```
 
-	$ tail -c N path/to/file
+**Print out N lines (until the '\n' character) from the ending of a file**
 
-print out N lines (util the '\n' character) from the beginning of a file
+```bash
+tail -n N path/to/file
+```
 
-	$ head -n N path/to/file
+- **Info about a given file**
 
-print out N lines (util the '\n' character) from the ending of a file
+```bash
+file path/to/file
+```
 
-	$ tail -n N path/to/file
+- **List the permission number, major and minor number, and other info about a file**
 
-info about a given file
-
-	$ file path/to/file
-
-list the permission number, major and minor number, and other info about a file
-
-	$ ls -la path/to/file
+```bash
+ls -la path/to/file
+```

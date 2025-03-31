@@ -1,35 +1,51 @@
-# Project layout helper and Scripts/Documentations for developing IF817 Course project
+# IHS Project
 
-**REMIDER**: This project layout it's not mandatory! You can feel free to use whatever build system you use for developing a user application. This has only a simple Makefile for people who don't need to setup a complex build system and just want to develop a simple C/C++/Assembly application. BUT be careful with the 'driver' folder, inside it has a Makefile that is vital for building the driver/module and one must not remove it.
+## 📂 Content
 
-## Content
- - [Useful Commands](docs/commands.md)
+- [Useful commands](docs/COMMANDS.md)
 
-## Current project tree
+## 🌳 Project tree
 
-	.
-	├── src
-	│   └── main.cpp
-	├── include
-	│   ├── display.h
-	│   └── ioctl_cmds.h
-	├── driver
-	│   ├── char
-	│   │   ├── dummy.c
-	│   │   └── Makefile
-	│   └── pci
-	│       ├── de2i-150.c
-	│       └── Makefile
-	├── exemples
-	│   ├── c
-	│   │   ├── app-char.c
-	│   │   └── app-pci.c
-	│   └── python
-	│       ├── app-char.py
-	│       └── app-pci.py
-	├── docs
-	│   └── commands.md
-	├── LICENSE
-	├── Makefile
-	├── README.md
-	└── setup.sh
+    .
+    ├── app
+    │   ├── assets
+    │   │   └── *
+    │   ├── game.py
+    │   ├── start.py
+    │   └── utils.py
+    ├── docs
+    │   └── COMMANDS.md
+    ├── driver
+    │   ├── char
+    │   │   ├── dummy.c
+    │   │   └── Makefile
+    │   └── pci
+    │       ├── de2i-150.c
+    │       └── Makefile
+    ├── include
+    │   ├── display.h
+    │   └── ioctl_cmds.h
+    ├── mapping
+    │   └── *
+    ├── .gitignore 
+    ├── README.md
+    └── setup.sh
+
+## 🚀 How to run the project
+
+Just open up a terminal and run the below command:
+
+```bash
+sh setup.sh
+```
+
+Then you're ready to go, have fun! 😁
+
+## 👥 Group
+
+- [Filipe Baptistella (fbv)](https://github.com/filipe-baptistella)
+- [João Marcos (jmav)](https://github.com/jmarcossss)
+- [Lucas Emmanuel (legl)](https://github.com/OhLK)
+- [Mateus Elias (meap)](https://github.com/mateuseap)
+- [Nathalia Barbosa (nfab)](https://github.com/nathaliafab)
+- [Pedro Rodrigues (prds)](https://github.com/Pedr0Domingues)
