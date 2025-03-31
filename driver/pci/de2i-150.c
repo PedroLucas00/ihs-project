@@ -242,6 +242,33 @@ static ssize_t my_write(struct file *filp, const char __user *buf, size_t count,
 	return retval;
 }
 
+static void lcd_write_message(const char *message)
+{
+	int i;
+
+	if (bar0_mmio == NULL)
+	{
+		printk("my_driver: LCD error - BAR0 not mapped!\n");
+		return;
+	}
+
+	void __iomem *lcd_cmd = bar0_mmio + LCD_CMD_REG;
+	void __iomem *lcd_data = bar0_mmio + LCD_DATA_REG;
+
+	// Comando para limpar a tela
+	iowrite16(0x01, lcd_cmd);
+	usleep_range(2000, 3000); // Espera um tempo para a limpeza
+
+	// Enviar caracteres para o LCD
+	for (i = 0; message[i] != '\0'; i++)
+	{
+		iowrite16(message[i], lcd_data); // Envia caractere
+		usleep_range(1000, 2000);		 // Pequeno delay para evitar sobrecarga
+	}
+
+	printk("my_driver: Mensagem escrita no LCD: %s\n", message);
+}
+
 static long int my_ioctl(struct file *, unsigned int cmd, unsigned long arg)
 {
 	char user_message[32];
@@ -345,33 +372,6 @@ static void __exit my_pci_remove(struct pci_dev *dev)
 	pci_release_region(dev, 0);
 
 	printk("my_driver: PCI Device - Disabled and BAR0 Released");
-}
-
-static void lcd_write_message(const char *message)
-{
-	int i;
-
-	if (bar0_mmio == NULL)
-	{
-		printk("my_driver: LCD error - BAR0 not mapped!\n");
-		return;
-	}
-
-	void __iomem *lcd_cmd = bar0_mmio + LCD_CMD_REG;
-	void __iomem *lcd_data = bar0_mmio + LCD_DATA_REG;
-
-	// Comando para limpar a tela
-	iowrite16(0x01, lcd_cmd);
-	usleep_range(2000, 3000); // Espera um tempo para a limpeza
-
-	// Enviar caracteres para o LCD
-	for (i = 0; message[i] != '\0'; i++)
-	{
-		iowrite16(message[i], lcd_data); // Envia caractere
-		usleep_range(1000, 2000);		 // Pequeno delay para evitar sobrecarga
-	}
-
-	printk("my_driver: Mensagem escrita no LCD: %s\n", message);
 }
 
 module_init(my_init);
