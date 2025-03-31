@@ -48,7 +48,7 @@ obstaculo_Y=510
 obstaculo_X2=random.randint(900+minGap, 900+maxGap)
 obstaculo_X3=random.randint(obstaculo_X2+minGap, obstaculo_X2+maxGap)
 lastObstacle=obstaculo_X3
-speed=-6
+speed=-8
 posbgX = 0
 
 fd = os.open(PATH, os.O_RDWR)
@@ -255,6 +255,6 @@ def game_intro():
         if sprites_screen[2] : screen.blit(instructions, (0,0))
         if sprites_screen[3] : screen.blit(exit, (0,0))
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(90)
 
 game_intro()
