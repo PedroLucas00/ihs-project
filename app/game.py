@@ -14,9 +14,9 @@ screen = pygame.display.set_mode(WINDOW_SIZE,0,32)
 
 player_walkR = [pygame.image.load('assets/naruto1d.png'), pygame.image.load('assets/naruto2d.png'), pygame.image.load('assets/naruto3d.png'), pygame.image.load('assets/naruto4d.png'), pygame.image.load('assets/naruto5d.png'), pygame.image.load('assets/naruto6d.png'), pygame.image.load('assets/naruto7d.png'), pygame.image.load('assets/naruto8d.png'), pygame.image.load('assets/naruto9d.png'), pygame.image.load('assets/naruto10d.png'), pygame.image.load('assets/naruto11d.png'), pygame.image.load('assets/naruto12d.png'), pygame.image.load('assets/naruto13d.png'), pygame.image.load('assets/naruto14d.png'), pygame.image.load('assets/naruto15d.png')] #carrega a imagem do meu personagem
 player_walkL = [pygame.image.load('assets/naruto1e.png'), pygame.image.load('assets/naruto2e.png'), pygame.image.load('assets/naruto3e.png'), pygame.image.load('assets/naruto4e.png'), pygame.image.load('assets/naruto5e.png'), pygame.image.load('assets/naruto6e.png'), pygame.image.load('assets/naruto7e.png'), pygame.image.load('assets/naruto8e.png'), pygame.image.load('assets/naruto9e.png'), pygame.image.load('assets/naruto10e.png'), pygame.image.load('assets/naruto11e.png'), pygame.image.load('assets/naruto12e.png'), pygame.image.load('assets/naruto13e.png'), pygame.image.load('assets/naruto14e.png'), pygame.image.load('assets/naruto15e.png')]
-player_jump = [pygame.image.load('assets/narutojumpd.png'), pygame.image.load('assets/narutojumpe.png')]
-obstaculo_sprite = pygame.image.load('assets/obstaculo.png')
-obstaculo1_sprite = pygame.image.load('assets/obstaculo1.jpg')
+player_jump = [pygame.image.load('assets/jumpd.png'), pygame.image.load('assets/jumpe.png')]
+obstaculo_sprite = pygame.image.load('assets/obstaculo1.png')
+obstaculo1_sprite = pygame.image.load('assets/obstaculo2.png')
 bg = pygame.image.load('assets/background.png')
 home = pygame.image.load('assets/home.png')
 play = pygame.image.load('assets/play.png')
@@ -179,9 +179,9 @@ def game_loop():
             else:
                 player_location[0] = 0
         player_location[1] += vertical_momentum
-        vertical_momentum += 0.3
-        if vertical_momentum > 5:
-            vertical_momentum = 4
+        vertical_momentum += 0.6
+        if vertical_momentum > 8:
+            vertical_momentum = 8
         
         
         player_rect.x = player_location[0]
@@ -255,6 +255,6 @@ def game_intro():
         if sprites_screen[2] : screen.blit(instructions, (0,0))
         if sprites_screen[3] : screen.blit(exit, (0,0))
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(60)
 
 game_intro()
