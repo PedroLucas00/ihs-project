@@ -126,7 +126,7 @@ def redrawGameWindow():
     pygame.display.update()
 
 increase_speed = pygame.USEREVENT+1
-pygame.time.set_timer(increase_speed,1000)
+pygame.time.set_timer(increase_speed, 500)
 
 def game_loop():
     global fd 
