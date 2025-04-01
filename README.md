@@ -43,4 +43,8 @@ Then you're ready to go, have fun! 😁
 
 ## 👥 Group
 
--
+- Fábio Willian Andrade Silva (fwas)
+- João Pedro Silva da Rocha (jpsr)
+- Marcos Wanderson dos Santos Alves (mwsa2)
+- Mikael Cavalcanti da Silva (mcs11)
+- Pedro Lucas da Silva Lucena (plsl)
