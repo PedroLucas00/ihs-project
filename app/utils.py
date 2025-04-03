@@ -2,7 +2,7 @@ import os
 from fcntl import ioctl
 from time import sleep
 
-PATH = '/dev/'
+PATH = '/dev'
 
 RD_SWITCHES = 24929
 RD_PBUTTONS = 24930
